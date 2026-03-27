@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NetBox Wiki</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:       #0d1117;
+    --bg2:      #161b22;
+    --bg3:      #21262d;
+    --border:   #30363d;
+    --border2:  #3d444d;
+    --text:     #c9d1d9;
+    --text-dim: #8b949e;
+    --text-hi:  #e6edf3;
+    --blue:     #58a6ff;
+    --green:    #3fb950;
+    --amber:    #d29922;
+    --red:      #f85149;
+    --purple:   #bc8cff;
+    --teal:     #39d353;
+    --font:     'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    height: 48px;
+    flex-shrink: 0;
+  }
+
+  .logo {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--blue);
+    letter-spacing: 2px;
+    margin-right: 32px;
+    white-space: nowrap;
+  }
+
+  .logo em { color: var(--green); font-style: normal; }
+
+  .topnav { display: flex; gap: 2px; }
+
+  .topnav a {
+    padding: 6px 14px;
+    border-radius: 4px;
+    color: var(--text-dim);
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all .15s;
+  }
+
+  .topnav a:hover { color: var(--text); background: var(--bg3); }
+  .topnav a.act   { color: var(--blue); background: rgba(88,166,255,.1); border-color: rgba(88,166,255,.2); }
+
+  .topbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(63,185,80,.08);
+    border: 1px solid rgba(63,185,80,.2);
+    border-radius: 20px;
+    padding: 3px 10px;
+    color: var(--green);
+    font-size: 11px;
+  }
+
+  .status-pill::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+  }
+
+  /* ── LAYOUT ── */
+  .shell { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 48px); }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 196px;
+    min-width: 196px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .sb-section { padding: 14px 0 4px; }
+
+  .sb-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 2px 16px 6px;
+  }
+
+  .sb-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    font-size: 12px;
+    transition: all .12s;
+  }
+
+  .sb-item:hover { color: var(--text); background: var(--bg3); }
+
+  .sb-item.act {
+    color: var(--blue);
+    border-left-color: var(--blue);
+    background: rgba(88,166,255,.06);
+  }
+
+  .sb-icon { width: 14px; text-align: center; font-size: 12px; }
+
+  .sb-count {
+    margin-left: auto;
+    font-size: 10px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1px 6px;
+    color: var(--text-dim);
+  }
+
+  .sb-item.act .sb-count { background: rgba(88,166,255,.15); border-color: rgba(88,166,255,.3); color: var(--blue); }
+
+  /* ── MAIN ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  .content-header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .breadcrumb {
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .breadcrumb span { color: var(--text); }
+  .breadcrumb-sep { color: var(--border2); }
+
+  .header-actions { display: flex; gap: 8px; }
+
+  .btn {
+    font-family: var(--font);
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all .15s;
+    letter-spacing: .3px;
+  }
+
+  .btn:hover { border-color: var(--border2); color: var(--text); background: var(--bg3); }
+
+  .btn-primary {
+    background: rgba(35,134,54,.9);
+    border-color: #2ea043;
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: #2ea043; border-color: #3fb950; color: #fff; }
+
+  .btn-blue { border-color: rgba(88,166,255,.3); color: var(--blue); }
+  .btn-blue:hover { background: rgba(88,166,255,.1); border-color: var(--blue); color: var(--blue); }
+
+  /* ── CONTENT ── */
+  .content-body { flex: 1; overflow-y: auto; padding: 24px; }
+
+  /* Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+
+  .stat-card.blue::before  { background: var(--blue); }
+  .stat-card.green::before { background: var(--green); }
+  .stat-card.amber::before { background: var(--amber); }
+  .stat-card.purple::before{ background: var(--purple); }
+
+  .stat-label { font-size: 10px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .stat-val   { font-size: 26px; font-weight: 700; line-height: 1; }
+  .stat-sub   { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+  .stat-card.blue  .stat-val { color: var(--blue); }
+  .stat-card.green .stat-val { color: var(--green); }
+  .stat-card.amber .stat-val { color: var(--amber); }
+  .stat-card.purple .stat-val{ color: var(--purple); }
+
+  /* Section */
+  .section { margin-bottom: 28px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Table */
+  .table-wrap {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+
+  thead th {
+    background: var(--bg2);
+    color: var(--text-dim);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 9px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody td {
+    padding: 9px 14px;
+    border-bottom: 1px solid rgba(48,54,61,.6);
+    color: var(--text);
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: rgba(88,166,255,.03); }
+
+  .td-name { font-weight: 600; color: var(--text-hi); }
+  .td-ip   { font-family: var(--font); font-size: 11px; color: #79c0ff; }
+  .td-mono { font-size: 11px; color: var(--text-dim); }
+
+  /* Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+
+  .badge::before {
+    content: '';
+    width: 5px; height: 5px;
+    border-radius: 50%;
+  }
+
+  .b-ok     { background: rgba(63,185,80,.1);  color: #3fb950; border: 1px solid rgba(63,185,80,.25); }
+  .b-ok::before { background: #3fb950; box-shadow: 0 0 4px #3fb950; }
+
+  .b-warn   { background: rgba(210,153,34,.1); color: #d29922; border: 1px solid rgba(210,153,34,.25); }
+  .b-warn::before { background: #d29922; }
+
+  .b-err    { background: rgba(248,81,73,.1);  color: #f85149; border: 1px solid rgba(248,81,73,.25); }
+  .b-err::before { background: #f85149; box-shadow: 0 0 4px #f85149; }
+
+  .b-info   { background: rgba(88,166,255,.1); color: #58a6ff; border: 1px solid rgba(88,166,255,.25); }
+  .b-info::before { background: #58a6ff; }
+
+  .b-purple { background: rgba(188,140,255,.1);color: #bc8cff; border: 1px solid rgba(188,140,255,.25); }
+  .b-purple::before { background: #bc8cff; }
+
+  /* Detail cards */
+  .cards-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .detail-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .detail-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,.02);
+  }
+
+  .detail-card-title { font-size: 12px; font-weight: 600; color: var(--text-hi); }
+
+  .detail-card-body { padding: 0; }
+
+  .field-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 14px;
+    border-bottom: 1px solid rgba(48,54,61,.5);
+    font-size: 12px;
+  }
+
+  .field-row:last-child { border-bottom: none; }
+  .field-key { color: var(--text-dim); }
+  .field-val { color: var(--text-hi); font-weight: 500; }
+
+  /* Code block */
+  .code-block {
+    background: #090b10;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-family: var(--font);
+    font-size: 12px;
+    line-height: 1.8;
+    margin-bottom: 28px;
+    position: relative;
+  }
+
+  .code-tag {
+    position: absolute;
+    top: 8px; right: 12px;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  .c-comment { color: #484f58; }
+  .c-key     { color: var(--blue); }
+  .c-val     { color: #a5d6ff; }
+  .c-str     { color: #a5d6ff; }
+  .c-num     { color: var(--purple); }
+
+  /* Checklist */
+  .checklist { list-style: none; }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 0;
+    font-size: 12px;
+    border-bottom: 1px solid rgba(48,54,61,.4);
+  }
+
+  .checklist li:last-child { border-bottom: none; }
+
+  .check {
+    width: 15px; height: 15px;
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+  }
+
+  .check.done { background: rgba(63,185,80,.2); border-color: var(--green); color: var(--green); }
+
+  /* Page section tabs */
+  .page-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .page-tab {
+    padding: 8px 16px;
+    font-size: 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all .15s;
+  }
+
+  .page-tab:hover { color: var(--text); }
+  .page-tab.act   { color: var(--blue); border-bottom-color: var(--blue); }
+
+  /* Info box */
+  .infobox {
+    border-left: 3px solid;
+    border-radius: 0 4px 4px 0;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .infobox.warn {
+    background: rgba(210,153,34,.07);
+    border-color: var(--amber);
+    color: #d29922;
+  }
+
+  .infobox.danger {
+    background: rgba(248,81,73,.07);
+    border-color: var(--red);
+    color: #f85149;
+  }
+
+  .infobox .ib-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+    display: block;
+  }
+
+  /* Footer */
+  .footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 11px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .footer-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border2); }
+
+  /* Tab content */
+  .tab-content { display: none; }
+  .tab-content.act { display: block; }
+
+  /* Sidebar active page highlight */
+  .page-active { background: var(--bg2); }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .cards-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">NET<em>BOX</em> <span style="font-size:10px;color:var(--text-dim);font-weight:400;letter-spacing:0">//&nbsp;wiki</span></div>
+  <nav class="topnav">
+    <a class="act" onclick="switchTop(this,'infra')">Infrastruktur</a>
+    <a onclick="switchTop(this,'ipam')">IPAM</a>
+    <a onclick="switchTop(this,'virt')">Virtualisierung</a>
+    <a onclick="switchTop(this,'sec')">Sicherheit</a>
+    <a onclick="switchTop(this,'admin')">Admin</a>
+  </nav>
+  <div class="topbar-right">
+    <div class="status-pill">Alle Systeme OK</div>
+    <span>v1.0</span>
+  </div>
+</div>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar-infra">
+    <div class="sb-section">
+      <div class="sb-label">Infrastruktur</div>
+      <div class="sb-item act" onclick="showPage('geraete',this)">
+        <span class="sb-icon">▸</span> Geräte <span class="sb-count">24</span>
+      </div>
+      <div class="sb-item" onclick="showPage('racks',this)">
+        <span class="sb-icon">▸</span> Racks <span class="sb-count">3</span>
+      </div>
+      <div class="sb-item" onclick="showPage('standorte',this)">
+        <span class="sb-icon">▸</span> Standorte <span class="sb-count">2</span>
+      </div>
+      <div class="sb-item" onclick="showPage('hersteller',this)">
+        <span class="sb-icon">▸</span> Hersteller
+      </div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-label">Netzwerk</div>
+      <div class="sb-item" onclick="showPage('ips',this)">
+        <span class="sb-icon">▸</span> IP-Adressen <span class="sb-count">148</span>
+      </div>
+      <div class="sb-item" onclick="showPage('vlans',this)">
+        <span class="sb-icon">▸</span> VLANs <span class="sb-count">6</span>
+      </div>
+      <div class="sb-item" onclick="showPage('prefixe',this)">
+        <span class="sb-icon">▸</span> Präfixe
+      </div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-label">Verwaltung</div>
+      <div class="sb-item" onclick="showPage('backup',this)">
+        <span class="sb-icon">▸</span> Backup
+      </div>
+      <div class="sb-item" onclick="showPage('sicherheit',this)">
+        <span class="sb-icon">▸</span> Sicherheit
+      </div>
+      <div class="sb-item" onclick="showPage('kontakte',this)">
+        <span class="sb-icon">▸</span> Kontakte
+      </div>
+      <div class="sb-item" onclick="showPage('notfall',this)">
+        <span class="sb-icon">▸</span> Notfallplan
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- ── PAGE: GERÄTE ── -->
+    <div id="page-geraete" class="tab-content act">
+      <div class="content-header">
+        <div class="breadcrumb">Infrastruktur <span class="breadcrumb-sep">/</span> <span>Geräte</span></div>
+        <div class="header-actions">
+          <button class="btn">Export</button>
+          <button class="btn btn-blue">Filter</button>
+          <button class="btn btn-primary">+ Neues Gerät</button>
+        </div>
+      </div>
+      <div class="content-body">
+        <div class="stats-grid">
+          <div class="stat-card blue">
+            <div class="stat-label">Gesamt</div>
+            <div class="stat-val">24</div>
+            <div class="stat-sub">3 in Wartung</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">Online</div>
+            <div class="stat-val">19</div>
+            <div class="stat-sub">79% verfügbar</div>
+          </div>
+          <div class="stat-card amber">
+            <div class="stat-label">Wartung</div>
+            <div class="stat-val">3</div>
+            <div class="stat-sub">geplant</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-label">Offline</div>
+            <div class="stat-val">2</div>
+            <div class="stat-sub">Prüfung nötig</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Geräteübersicht</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th><th>Typ</th><th>Hersteller</th><th>IP-Adresse</th><th>Standort</th><th>Rack / HE</th><th>Verantwortlich</th><th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="td-name">SRV-01</td><td>Rack-Server</td><td>Dell</td><td><span class="td-ip">192.168.20.1</span></td><td>Serverraum A</td><td class="td-mono">Rack 1 / HE 3–5</td><td>[Name]</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td class="td-name">SRV-02</td><td>NAS</td><td>Synology</td><td><span class="td-ip">192.168.20.2</span></td><td>Serverraum A</td><td class="td-mono">Rack 1 / HE 6</td><td>[Name]</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td class="td-name">FW-01</td><td>Firewall</td><td>Fortinet</td><td><span class="td-ip">192.168.10.1</span></td><td>Rack 1</td><td class="td-mono">Rack 1 / HE 1</td><td>[Name]</td><td><span class="badge b-warn">Wartung</span></td></tr>
+                <tr><td class="td-name">SW-CORE-01</td><td>Core-Switch</td><td>Cisco</td><td><span class="td-ip">192.168.10.2</span></td><td>Rack 1</td><td class="td-mono">Rack 1 / HE 2</td><td>[Name]</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td class="td-name">AP-FLOOR-01</td><td>Access Point</td><td>Ubiquiti</td><td><span class="td-ip">192.168.30.5</span></td><td>Büro EG</td><td class="td-mono">—</td><td>[Name]</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td class="td-name">BACKUP-01</td><td>Backup-Server</td><td>HPE</td><td><span class="td-ip">192.168.20.9</span></td><td>Serverraum B</td><td class="td-mono">Rack 2 / HE 4</td><td>[Name]</td><td><span class="badge b-err">Offline</span></td></tr>
+                <tr><td class="td-name">PRINT-01</td><td>Drucker</td><td>HP</td><td><span class="td-ip">192.168.30.20</span></td><td>Büro 1.OG</td><td class="td-mono">—</td><td>[Name]</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td class="td-name">VM-HOST-01</td><td>Hypervisor</td><td>Dell</td><td><span class="td-ip">192.168.20.5</span></td><td>Serverraum A</td><td class="td-mono">Rack 1 / HE 7–9</td><td>[Name]</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="cards-row">
+          <div class="detail-card">
+            <div class="detail-card-head">
+              <span class="detail-card-title">SRV-01 — Details</span>
+              <span class="badge b-ok">Aktiv</span>
+            </div>
+            <div class="detail-card-body">
+              <div class="field-row"><span class="field-key">Hersteller</span><span class="field-val">Dell Inc.</span></div>
+              <div class="field-row"><span class="field-key">Modell</span><span class="field-val">PowerEdge R740</span></div>
+              <div class="field-row"><span class="field-key">Seriennr.</span><span class="field-val td-mono">SN-XXXX-0001</span></div>
+              <div class="field-row"><span class="field-key">CPU</span><span class="field-val">2× Xeon Silver 4210</span></div>
+              <div class="field-row"><span class="field-key">RAM</span><span class="field-val">128 GB ECC</span></div>
+              <div class="field-row"><span class="field-key">Rack / HE</span><span class="field-val">Rack 1 / HE 3–5</span></div>
+              <div class="field-row"><span class="field-key">Garantie bis</span><span class="field-val">31.12.2027</span></div>
+              <div class="field-row"><span class="field-key">Verantwortlich</span><span class="field-val">[Name]</span></div>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-card-head">
+              <span class="detail-card-title">Netzwerk-Interfaces — SRV-01</span>
+            </div>
+            <div class="detail-card-body">
+              <div class="field-row"><span class="field-key td-mono">eth0</span><span class="field-val"><span class="td-ip">192.168.20.1</span> <span class="badge b-ok" style="font-size:9px">Management</span></span></div>
+              <div class="field-row"><span class="field-key td-mono">eth1</span><span class="field-val"><span class="td-ip">192.168.20.10</span> <span class="badge b-info" style="font-size:9px">Produktion</span></span></div>
+              <div class="field-row"><span class="field-key td-mono">eth2</span><span class="field-val"><span class="td-ip">10.0.0.1</span> <span class="badge b-purple" style="font-size:9px">Backup</span></span></div>
+              <div class="field-row"><span class="field-key">MAC (eth0)</span><span class="field-val td-mono">00:1A:2B:3C:4D:5E</span></div>
+              <div class="field-row"><span class="field-key">VLAN</span><span class="field-val">20 (Server)</span></div>
+              <div class="field-row"><span class="field-key">Switch-Port</span><span class="field-val td-mono">SW-CORE-01 / Gi0/1</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: VLANS ── -->
+    <div id="page-vlans" class="tab-content">
+      <div class="content-header">
+        <div class="breadcrumb">Netzwerk <span class="breadcrumb-sep">/</span> <span>VLANs</span></div>
+        <div class="header-actions">
+          <button class="btn">Export</button>
+          <button class="btn btn-primary">+ Neues VLAN</button>
+        </div>
+      </div>
+      <div class="content-body">
+        <div class="stats-grid">
+          <div class="stat-card green"><div class="stat-label">VLANs aktiv</div><div class="stat-val">6</div><div class="stat-sub">alle betriebsbereit</div></div>
+          <div class="stat-card blue"><div class="stat-label">Genutzte IPs</div><div class="stat-val">116</div><div class="stat-sub">von 1024 gesamt</div></div>
+          <div class="stat-card amber"><div class="stat-label">Freie IPs</div><div class="stat-val">908</div><div class="stat-sub">88% verfügbar</div></div>
+          <div class="stat-card purple"><div class="stat-label">Subnetze</div><div class="stat-val">6</div><div class="stat-sub">/24 Klasse C</div></div>
+        </div>
+        <div class="section">
+          <div class="section-header"><div class="section-title">VLAN-Konfiguration</div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>VLAN ID</th><th>Name</th><th>Präfix</th><th>Gateway</th><th>Geräte</th><th>DHCP</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="td-mono" style="color:var(--blue)">10</td><td>Management</td><td><span class="td-ip">192.168.10.0/24</span></td><td><span class="td-ip">192.168.10.1</span></td><td>4</td><td><span class="badge b-ok">Aktiv</span></td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td class="td-mono" style="color:var(--blue)">20</td><td>Server</td><td><span class="td-ip">192.168.20.0/24</span></td><td><span class="td-ip">192.168.20.1</span></td><td>9</td><td><span class="badge b-warn">Statisch</span></td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td class="td-mono" style="color:var(--blue)">30</td><td>Clients</td><td><span class="td-ip">192.168.30.0/24</span></td><td><span class="td-ip">192.168.30.1</span></td><td>22</td><td><span class="badge b-ok">Aktiv</span></td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td class="td-mono" style="color:var(--blue)">40</td><td>Gäste-WLAN</td><td><span class="td-ip">192.168.40.0/24</span></td><td><span class="td-ip">192.168.40.1</span></td><td>0</td><td><span class="badge b-ok">Aktiv</span></td><td><span class="badge b-info">Reserviert</span></td></tr>
+                <tr><td class="td-mono" style="color:var(--blue)">50</td><td>VoIP</td><td><span class="td-ip">192.168.50.0/24</span></td><td><span class="td-ip">192.168.50.1</span></td><td>8</td><td><span class="badge b-ok">Aktiv</span></td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td class="td-mono" style="color:var(--blue)">99</td><td>Quarantäne</td><td><span class="td-ip">10.99.0.0/24</span></td><td><span class="td-ip">10.99.0.1</span></td><td>0</td><td><span class="badge b-err">Deaktiviert</span></td><td><span class="badge b-warn">Standby</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header"><div class="section-title">Netzwerk-Konfiguration</div></div>
+          <div class="code-block">
+            <span class="code-tag">config.txt</span>
+            <span class="c-comment"># Netzwerksegmente — Stand 27.03.2026</span><br>
+            <span class="c-key">VLAN 10</span>  <span class="c-val">192.168.10.0/24</span>   <span class="c-comment"># Management</span><br>
+            <span class="c-key">VLAN 20</span>  <span class="c-val">192.168.20.0/24</span>   <span class="c-comment"># Server</span><br>
+            <span class="c-key">VLAN 30</span>  <span class="c-val">192.168.30.0/24</span>   <span class="c-comment"># Clients / Workstations</span><br>
+            <span class="c-key">VLAN 40</span>  <span class="c-val">192.168.40.0/24</span>   <span class="c-comment"># Gäste-WLAN (isoliert)</span><br>
+            <span class="c-key">VLAN 50</span>  <span class="c-val">192.168.50.0/24</span>   <span class="c-comment"># VoIP</span><br>
+            <br>
+            <span class="c-comment"># DNS-Server</span><br>
+            <span class="c-key">Primär:  </span>  <span class="c-val">192.168.10.10</span><br>
+            <span class="c-key">Sekundär:</span>  <span class="c-val">192.168.10.11</span><br>
+            <br>
+            <span class="c-comment"># Internet-Anbindung</span><br>
+            <span class="c-key">Provider:</span>  <span class="c-str">[ISP-Name]</span>   <span class="c-key">Bandbreite:</span> <span class="c-num">1 Gbit/s</span><br>
+            <span class="c-key">Failover: </span>  <span class="c-str">[ISP-2-Name]</span>  <span class="c-key">Bandbreite:</span> <span class="c-num">100 Mbit/s</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: IPs ── -->
+    <div id="page-ips" class="tab-content">
+      <div class="content-header">
+        <div class="breadcrumb">Netzwerk <span class="breadcrumb-sep">/</span> <span>IP-Adressen</span></div>
+        <div class="header-actions">
+          <button class="btn">Export</button>
+          <button class="btn btn-primary">+ IP hinzufügen</button>
+        </div>
+      </div>
+      <div class="content-body">
+        <div class="stats-grid">
+          <div class="stat-card blue"><div class="stat-label">IPs gesamt</div><div class="stat-val">148</div><div class="stat-sub">vergeben</div></div>
+          <div class="stat-card green"><div class="stat-label">Aktiv</div><div class="stat-val">121</div><div class="stat-sub">erreichbar</div></div>
+          <div class="stat-card amber"><div class="stat-label">Reserviert</div><div class="stat-val">27</div><div class="stat-sub">nicht vergeben</div></div>
+          <div class="stat-card purple"><div class="stat-label">Freie IPs</div><div class="stat-val">876</div><div class="stat-sub">verfügbar</div></div>
+        </div>
+        <div class="section">
+          <div class="section-header"><div class="section-title">IP-Adressliste</div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>IP-Adresse</th><th>FQDN</th><th>Gerät</th><th>Interface</th><th>VLAN</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td><span class="td-ip">192.168.10.1</span></td><td class="td-mono">fw-01.intern</td><td>FW-01</td><td>mgmt0</td><td>10</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td><span class="td-ip">192.168.10.2</span></td><td class="td-mono">sw-core-01.intern</td><td>SW-CORE-01</td><td>vlan10</td><td>10</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td><span class="td-ip">192.168.20.1</span></td><td class="td-mono">srv-01.intern</td><td>SRV-01</td><td>eth0</td><td>20</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td><span class="td-ip">192.168.20.2</span></td><td class="td-mono">srv-02.intern</td><td>SRV-02</td><td>eth0</td><td>20</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td><span class="td-ip">192.168.20.9</span></td><td class="td-mono">backup-01.intern</td><td>BACKUP-01</td><td>eth0</td><td>20</td><td><span class="badge b-err">Offline</span></td></tr>
+                <tr><td><span class="td-ip">192.168.30.5</span></td><td class="td-mono">ap-floor-01.intern</td><td>AP-FLOOR-01</td><td>eth0</td><td>30</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td><span class="td-ip">192.168.30.20</span></td><td class="td-mono">print-01.intern</td><td>PRINT-01</td><td>eth0</td><td>30</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: BACKUP ── -->
+    <div id="page-backup" class="tab-content">
+      <div class="content-header">
+        <div class="breadcrumb">Verwaltung <span class="breadcrumb-sep">/</span> <span>Backup & Recovery</span></div>
+        <div class="header-actions">
+          <button class="btn">Export</button>
+          <button class="btn btn-primary">+ Backup-Job</button>
+        </div>
+      </div>
+      <div class="content-body">
+        <div class="infobox warn">
+          <span class="ib-label">⚠ Hinweis</span>
+          Backup-Server BACKUP-01 ist derzeit offline. Letzte erfolgreiche Sicherung vor 3 Tagen. Sofortmaßnahmen erforderlich.
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card green"><div class="stat-label">Jobs OK</div><div class="stat-val">8</div><div class="stat-sub">letzte 24h</div></div>
+          <div class="stat-card amber"><div class="stat-label">Jobs ausstehend</div><div class="stat-val">3</div><div class="stat-sub">warten auf Server</div></div>
+          <div class="stat-card err" style="border-top:2px solid var(--red)"><div class="stat-label">Jobs fehlgeschlagen</div><div class="stat-val" style="color:var(--red)">2</div><div class="stat-sub">letzte 24h</div></div>
+          <div class="stat-card blue"><div class="stat-label">Datenmenge</div><div class="stat-val">4.2</div><div class="stat-sub">TB gesichert</div></div>
+        </div>
+        <div class="section">
+          <div class="section-header"><div class="section-title">Backup-Übersicht (3-2-1-Strategie)</div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>System</th><th>Turnus</th><th>Aufbewahrung</th><th>Ziel 1</th><th>Ziel 2</th><th>Letztes Backup</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="td-name">Active Directory</td><td>Täglich</td><td>30 Tage</td><td>NAS</td><td>Cloud</td><td class="td-mono">Heute 02:00</td><td><span class="badge b-ok">OK</span></td></tr>
+                <tr><td class="td-name">Fileserver</td><td>Täglich</td><td>90 Tage</td><td>NAS</td><td>Off-Site</td><td class="td-mono">Heute 03:00</td><td><span class="badge b-ok">OK</span></td></tr>
+                <tr><td class="td-name">Datenbank-Server</td><td>Stündlich</td><td>7 Tage</td><td>NAS</td><td>Cloud</td><td class="td-mono">Vor 1h</td><td><span class="badge b-ok">OK</span></td></tr>
+                <tr><td class="td-name">VM-Snapshots</td><td>Wöchentlich</td><td>4 Wochen</td><td>NAS</td><td>—</td><td class="td-mono">Vor 3 Tagen</td><td><span class="badge b-warn">Ausstehend</span></td></tr>
+                <tr><td class="td-name">E-Mail-Server</td><td>Täglich</td><td>180 Tage</td><td>NAS</td><td>Off-Site</td><td class="td-mono">Gestern</td><td><span class="badge b-ok">OK</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: SICHERHEIT ── -->
+    <div id="page-sicherheit" class="tab-content">
+      <div class="content-header">
+        <div class="breadcrumb">Verwaltung <span class="breadcrumb-sep">/</span> <span>Sicherheit</span></div>
+        <div class="header-actions">
+          <button class="btn">Bericht exportieren</button>
+        </div>
+      </div>
+      <div class="content-body">
+        <div class="section">
+          <div class="section-header"><div class="section-title">Sicherheits-Checkliste</div></div>
+          <ul class="checklist">
+            <li><div class="check done">✓</div> Firewall-Regeln dokumentiert und geprüft (zuletzt: 15.03.2026)</li>
+            <li><div class="check done">✓</div> MFA für alle Admin-Konten aktiviert</li>
+            <li><div class="check done">✓</div> Endpoint-Protection auf allen Geräten installiert</li>
+            <li><div class="check done">✓</div> SSL-Zertifikate gültig (ablaufend: 01.09.2026)</li>
+            <li><div class="check done">✓</div> Patch-Level: alle Server auf aktuellem Stand</li>
+            <li><div class="check"></div> Penetrationstest geplant für Q3 2026</li>
+            <li><div class="check"></div> Sicherheitsschulungen für alle Mitarbeiter (fällig: Q2 2026)</li>
+            <li><div class="check"></div> Passwortrichtlinie überprüfen (zuletzt geändert: 2024)</li>
+            <li><div class="check"></div> DSGVO-Audit für neue Systeme ausstehend</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: KONTAKTE ── -->
+    <div id="page-kontakte" class="tab-content">
+      <div class="content-header">
+        <div class="breadcrumb">Verwaltung <span class="breadcrumb-sep">/</span> <span>Kontakte</span></div>
+        <div class="header-actions">
+          <button class="btn btn-primary">+ Kontakt</button>
+        </div>
+      </div>
+      <div class="content-body">
+        <div class="section">
+          <div class="section-header"><div class="section-title">IT-Kontakte</div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Funktion</th><th>Name</th><th>Erreichbarkeit</th><th>E-Mail</th><th>Telefon</th><th>Priorität</th></tr></thead>
+              <tbody>
+                <tr><td>IT-Leitung</td><td class="td-name">[Name]</td><td>Mo–Fr 08–17h</td><td class="td-mono">itlead@firma.de</td><td class="td-mono">+41 xx xxx xx xx</td><td><span class="badge b-err">Kritisch</span></td></tr>
+                <tr><td>Netzwerk-Admin</td><td class="td-name">[Name]</td><td>On-Call 24/7</td><td class="td-mono">network@firma.de</td><td class="td-mono">+41 xx xxx xx xx</td><td><span class="badge b-err">Kritisch</span></td></tr>
+                <tr><td>Sicherheitsbeauftragter</td><td class="td-name">[Name]</td><td>Mo–Fr 09–16h</td><td class="td-mono">security@firma.de</td><td class="td-mono">+41 xx xxx xx xx</td><td><span class="badge b-warn">Hoch</span></td></tr>
+                <tr><td>ISP-Support</td><td class="td-name">[Provider]</td><td>24/7</td><td class="td-mono">support@isp.ch</td><td class="td-mono">+41 xx xxx xx xx</td><td><span class="badge b-info">Normal</span></td></tr>
+                <tr><td>Hardware-Service</td><td class="td-name">[Hersteller]</td><td>Mo–Fr 08–18h</td><td class="td-mono">service@hw.ch</td><td class="td-mono">+41 xx xxx xx xx</td><td><span class="badge b-info">Normal</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: NOTFALL ── -->
+    <div id="page-notfall" class="tab-content">
+      <div class="content-header">
+        <div class="breadcrumb">Verwaltung <span class="breadcrumb-sep">/</span> <span>Notfallplan</span></div>
+      </div>
+      <div class="content-body">
+        <div class="infobox danger">
+          <span class="ib-label">🔴 Notfall</span>
+          Bei kritischen Systemausfällen sofort den Notfallplan aktivieren und die IT-Leitung unter der Notfallnummer kontaktieren.
+        </div>
+        <div class="section">
+          <div class="section-header"><div class="section-title">Eskalationsstufen</div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Stufe</th><th>Beschreibung</th><th>Maßnahme</th><th>Verantwortlich</th><th>SLA</th></tr></thead>
+              <tbody>
+                <tr><td><span class="badge b-info">P4</span></td><td>Geringe Störung</td><td>Ticket erstellen</td><td>Helpdesk</td><td class="td-mono">8h</td></tr>
+                <tr><td><span class="badge b-warn">P3</span></td><td>Mittlere Störung</td><td>Ticket + Eskalation</td><td>IT-Admin</td><td class="td-mono">4h</td></tr>
+                <tr><td><span class="badge b-err">P2</span></td><td>Kritischer Ausfall</td><td>On-Call aktivieren</td><td>IT-Leitung</td><td class="td-mono">1h</td></tr>
+                <tr><td><span class="badge b-err" style="background:rgba(248,81,73,.25)">P1</span></td><td>Totalausfall / Datenverlust</td><td>Notfallteam + Management</td><td>Geschäftsführung</td><td class="td-mono">15 min</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: RACKS ── -->
+    <div id="page-racks" class="tab-content">
+      <div class="content-header">
+        <div class="breadcrumb">Infrastruktur <span class="breadcrumb-sep">/</span> <span>Racks</span></div>
+        <div class="header-actions">
+          <button class="btn btn-primary">+ Neues Rack</button>
+        </div>
+      </div>
+      <div class="content-body">
+        <div class="section">
+          <div class="section-header"><div class="section-title">Rack-Übersicht</div></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Rack-ID</th><th>Standort</th><th>Höheneinheiten</th><th>Belegt</th><th>Frei</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="td-name">Rack 1</td><td>Serverraum A</td><td class="td-mono">42 HE</td><td class="td-mono">28 HE</td><td class="td-mono">14 HE</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td class="td-name">Rack 2</td><td>Serverraum B</td><td class="td-mono">42 HE</td><td class="td-mono">12 HE</td><td class="td-mono">30 HE</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+                <tr><td class="td-name">Rack 3</td><td>Büro EG (Netzwerkschrank)</td><td class="td-mono">12 HE</td><td class="td-mono">4 HE</td><td class="td-mono">8 HE</td><td><span class="badge b-ok">Aktiv</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAGE: STANDORTE ── -->
+    <div id="page-standorte" class="tab-content">
+      <div class="content-header">
+        <div class="breadcrumb">Infrastruktur <span class="breadcrumb-sep">/</span> <span>Standorte</span></div>
+        <div class="header-actions">
+          <button class="btn btn-primary">+ Neuer Standort</button>
+        </div>
+      </div>
+      <div class="content-body">
+        <div class="cards-row">
+          <div class="detail-card">
+            <div class="detail-card-head"><span class="detail-card-title">Hauptstandort</span><span class="badge b-ok">Primär</span></div>
+            <div class="detail-card-body">
+              <div class="field-row"><span class="field-key">Name</span><span class="field-val">[Firmenname]</span></div>
+              <div class="field-row"><span class="field-key">Adresse</span><span class="field-val">[Adresse]</span></div>
+              <div class="field-row"><span class="field-key">Geräte</span><span class="field-val">21</span></div>
+              <div class="field-row"><span class="field-key">Racks</span><span class="field-val">2 (Serverraum A + B)</span></div>
+              <div class="field-row"><span class="field-key">Kontakt</span><span class="field-val">[Name]</span></div>
+            </div>
+          </div>
+          <div class="detail-card">
+            <div class="detail-card-head"><span class="detail-card-title">Filiale / Aussenstelle</span><span class="badge b-info">Sekundär</span></div>
+            <div class="detail-card-body">
+              <div class="field-row"><span class="field-key">Name</span><span class="field-val">[Filiale]</span></div>
+              <div class="field-row"><span class="field-key">Adresse</span><span class="field-val">[Adresse]</span></div>
+              <div class="field-row"><span class="field-key">Geräte</span><span class="field-val">3</span></div>
+              <div class="field-row"><span class="field-key">Racks</span><span class="field-val">1 (Netzwerkschrank)</span></div>
+              <div class="field-row"><span class="field-key">Kontakt</span><span class="field-val">[Name]</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEFAULT PLACEHOLDER PAGES -->
+    <div id="page-hersteller" class="tab-content">
+      <div class="content-header"><div class="breadcrumb">Infrastruktur <span class="breadcrumb-sep">/</span> <span>Hersteller</span></div></div>
+      <div class="content-body"><div class="infobox warn"><span class="ib-label">Info</span>Seite noch nicht befüllt. Klicke auf + Hersteller um Einträge hinzuzufügen.</div></div>
+    </div>
+    <div id="page-prefixe" class="tab-content">
+      <div class="content-header"><div class="breadcrumb">Netzwerk <span class="breadcrumb-sep">/</span> <span>Präfixe</span></div></div>
+      <div class="content-body"><div class="infobox warn"><span class="ib-label">Info</span>Seite noch nicht befüllt.</div></div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-dot"></div>
+  <span>Alle Systeme betriebsbereit</span>
+  <span style="margin-left:auto">NetBox Wiki // Mein IT-Unternehmen // v1.0 // Stand: 27.03.2026</span>
+</div>
+
+<script>
+  function showPage(id, el) {
+    document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('act'));
+    document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('act'));
+    const page = document.getElementById('page-' + id);
+    if (page) page.classList.add('act');
+    if (el) el.classList.add('act');
+  }
+
+  function switchTop(el, section) {
+    document.querySelectorAll('.topnav a').forEach(a => a.classList.remove('act'));
+    el.classList.add('act');
+  }
+</script>
+</body>
+</html>
